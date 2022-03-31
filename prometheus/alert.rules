@@ -1,0 +1,27 @@
+groups: 
+- name: Skillfactory.ru
+  rules:
+  - alert: WrongResponse
+    expr: probe_http_status_code{instance="https://lms.skillfactory.ru", job="blackbox"} != 200
+    for: 1m
+    labels:
+      severity: critical
+    annotations:
+      summary: "Response from skillfactory.ru is not 200"
+  - alert: TooSlow
+    expr: probe_duration_seconds{instance="https://lms.skillfactory.ru", job="blackbox"} > 5
+    for: 1m
+    labels:
+      severity: critical
+    annotations:
+      summary: "Response delay from skillfactory.ru is longer than 5 seconds"
+- name: MyServer
+  rules:
+  - alert: Restarted
+    expr: (node_time_seconds{instance="node-exporter:9100", job="node"} - node_boot_time_seconds{instance="node-exporter:9100", job="node"}) < 600
+    for: 1m
+    labels:
+      severity: critical
+    annotations:
+      summary: "Server uptime is less than 10 minutes"
+
