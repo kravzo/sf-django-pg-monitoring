@@ -19,7 +19,7 @@ scrape_configs:
       module: [http_2xx]
     static_configs:
       - targets:
-        - https://lms.skillfactory.ru
+        - https://sf-grade.krvc.org
     relabel_configs:
       - source_labels: [__address__]
         target_label: __param_target

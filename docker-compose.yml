@@ -1,5 +1,26 @@
 version: '3.2'
+
+networks:
+  grafana:
+
 services:
+
+    loki:
+      image: grafana/loki:2.3.0
+      ports:
+        - "3100:3100"
+      command: -config.file=/etc/loki/local-config.yaml
+      networks:
+        - grafana
+
+    promtail:
+      image: grafana/promtail:2.3.0
+      volumes:
+        - /var/log:/var/log
+      command: -config.file=/etc/promtail/config.yml
+      networks:
+        - grafana
+
     prometheus:
         image: prom/prometheus:latest
         volumes:
@@ -9,6 +30,8 @@ services:
         ports:
             - 9090:9090
         restart: always
+        networks:
+          - grafana
 
     node-exporter:
         image: prom/node-exporter
@@ -25,6 +48,8 @@ services:
         ports:
             - 9100:9100
         restart: always
+        networks:
+          - grafana
 
     blackbox-exporter:
       image: prom/blackbox-exporter
@@ -34,6 +59,8 @@ services:
       volumes:
         - ./blackbox:/config
       command: --config.file=/config/blackbox.yml
+      networks:
+        - grafana
 
     alertmanager-bot:
       command:
@@ -43,13 +70,15 @@ services:
         - --bolt.path=/data/bot.db
       environment:
           TELEGRAM_ADMIN: "1222753769"
-          TELEGRAM_TOKEN: 5277978609:AAHVuKF5qYKdv_jVDGaxoQu2Tju3nIvTLqo
+          TELEGRAM_TOKEN: 
       image: metalmatze/alertmanager-bot:0.4.3
       ports:
         - 8080:8080
       restart: always
       volumes:
         - ./data:/data
+      networks:
+        - grafana
 
     alertmanager:
       image: prom/alertmanager:v0.21.0
@@ -61,7 +90,8 @@ services:
       command:
         - '--config.file=/etc/alertmanager/config.yml'
         - '--storage.path=/etc/alertmanager/data'
-
+      networks:
+        - grafana
     grafana:
         image: grafana/grafana
         depends_on:
@@ -72,3 +102,5 @@ services:
             - ./grafana:/var/lib/grafana
             - ./grafana/provisioning/:/etc/grafana/provisioning/
         restart: always
+        networks:
+          - grafana

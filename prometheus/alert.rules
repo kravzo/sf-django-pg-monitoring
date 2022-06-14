@@ -1,27 +1,27 @@
 groups: 
-- name: Skillfactory.ru
+- name: sf-grade.krvc.org
   rules:
   - alert: WrongResponse
-    expr: probe_http_status_code{instance="https://lms.skillfactory.ru", job="blackbox"} != 200
+    expr: probe_http_status_code{instance="https://sf-grade.krvc.org", job="blackbox"} != 200
     for: 1m
     labels:
       severity: critical
     annotations:
-      summary: "Response from skillfactory.ru is not 200"
+      summary: "Response from sf-grade.krvc.org is not 200"
   - alert: TooSlow
-    expr: probe_duration_seconds{instance="https://lms.skillfactory.ru", job="blackbox"} > 5
+    expr: probe_duration_seconds{instance="https://https://sf-grade.krvc.org", job="blackbox"} > 5
     for: 1m
     labels:
       severity: critical
     annotations:
-      summary: "Response delay from skillfactory.ru is longer than 5 seconds"
-- name: MyServer
+      summary: "Response delay from sf-grade.krvc.org is longer than 5 seconds"
+- name: Manager Server
   rules:
-  - alert: Restarted
-    expr: (node_time_seconds{instance="node-exporter:9100", job="node"} - node_boot_time_seconds{instance="node-exporter:9100", job="node"}) < 600
+  - alert: FreeSpace
+    expr: node_filesystem_avail_bytes{instance="node-exporter:9100", job="node"} < 5368709120
     for: 1m
     labels:
       severity: critical
     annotations:
-      summary: "Server uptime is less than 10 minutes"
+      summary: "Free space on srv is less than 5 Gb"
 
